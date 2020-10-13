@@ -144,6 +144,16 @@ impl<T> AsRef<Self> for IdealSlice<T> {
 	fn as_ref(&self) -> &Self {self}
 }
 
+impl<T: Clone> Clone for Box<IdealSlice<T>> {
+	fn clone(&self) -> Self {
+		self.to_ideal_vec().into_boxed_ideal_slice()
+	}
+
+	fn clone_from(&mut self, other: &Self) {
+		unsafe {generic_transmute::<&mut Self, &mut Box<[T]>>(self)}.clone_from(unsafe {generic_transmute::<&Self, &Box<[T]>>(other)})
+	}
+}
+
 // TODO: Implement Concat (slice_concat_trait)
 
 impl<T: Debug> Debug for IdealSlice<T> {

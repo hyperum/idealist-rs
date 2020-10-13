@@ -1,6 +1,6 @@
 [package]
 name = "idealist"
-version = "0.1.1"
+version = "0.1.2"
 description = "A library of non-empty wrappers for standard list types."
 readme = "README.md"
 homepage = "https://github.com/hyperum/idealist-rs"
@@ -11,5 +11,3 @@ authors = ["Aaron Yeoh Cruz <aaronhyperum@gmail.com>"]
 keywords = ["non-empty", "nonempty", "wrapper", "slice", "list"]
 categories = ["rust-patterns", "no-std"]
 edition = "2018"
-
-[dependencies]

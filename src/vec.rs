@@ -79,6 +79,10 @@ impl<T> IdealVec<T> {
 	pub fn len(&self) -> NonZeroUsize {
 		unsafe {NonZeroUsize::new_unchecked(self.0.len())}
 	}
+
+	pub fn into_boxed_ideal_slice(self) -> Box<IdealSlice<T>> {
+		unsafe {IdealSlice::new_ptr_unchecked::<WithBox>(self.0.into_boxed_slice())}
+	}
 }
 
 impl<T> AsMut<[T]> for IdealVec<T> {

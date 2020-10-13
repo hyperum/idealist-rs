@@ -26,6 +26,7 @@ use core::{
 };
 use alloc::vec::Vec;
 use super::{
+	//pointer_class::*,
 	slice::*,
 	vec::*,
 };
@@ -264,23 +265,24 @@ impl<'a, T, const N: NonZeroUsize> TryFrom<&'a IdealSlice<T>> for &'a IdealArray
 	}
 }
 
-impl<'a, T, const N: NonZeroUsize> TryFrom<&'a mut IdealSlice<T>> for &'a mut IdealArray<T, N> where [T; N.get()]: Sized, T: Copy {
+impl<'a, T: Copy, const N: NonZeroUsize> TryFrom<&'a mut IdealSlice<T>> for &'a mut IdealArray<T, N> where [T; N.get()]: Sized {
 	type Error = TryFromSliceError;
 	#[inline]
 	fn try_from(slice: &'a mut IdealSlice<T>) -> Result<Self, Self::Error> {
-		<[T; N.get()] as TryFrom<&'a mut [T]>>::try_from(&mut slice.0)
+		unsafe {
+			<&'a mut [T; N.get()] as TryFrom<&'a mut [T]>>::try_from(&mut slice.0).map(|ok| generic_transmute::<&'a mut [T; N.get()], Self>(ok))
+		}
 	}
-}
-*/
+}*/
 
-impl<T, const N: NonZeroUsize> TryFrom<Vec<T>> for IdealArray<T, N> where [T; N.get()]: Sized, T: Copy {
+impl<T: Copy, const N: NonZeroUsize> TryFrom<Vec<T>> for IdealArray<T, N> where [T; N.get()]: Sized {
 	type Error = Vec<T>;
 	fn try_from(vec: Vec<T>) -> Result<Self, Self::Error> {
-		<[T; N.get()] as TryFrom<Vec<T>>>::try_from(vec).map(|ok| Self(ok))
+		<[T; N.get()]>::try_from(vec).map(|ok| Self(ok))
 	}
 }
 
-impl<T, const N: NonZeroUsize> TryFrom<IdealVec<T>> for IdealArray<T, N> where [T; N.get()]: Sized, T: Copy {
+impl<T: Copy, const N: NonZeroUsize> TryFrom<IdealVec<T>> for IdealArray<T, N> where [T; N.get()]: Sized {
 	type Error = IdealVec<T>;
 	fn try_from(vec: IdealVec<T>) -> Result<Self, Self::Error> {
 		Self::try_from(vec.0).map_err(|err| IdealVec(err))
